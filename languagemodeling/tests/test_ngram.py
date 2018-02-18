@@ -29,6 +29,7 @@ class TestNGram(TestCase):
             ('salmón',): 1,
         }
         for gram, c in counts.items():
+
             self.assertEqual(ngram.count(gram), c)
 
     def test_count_2gram(self):
