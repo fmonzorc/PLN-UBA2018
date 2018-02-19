@@ -4,19 +4,19 @@ import math
 
 
 class LanguageModel(object):
-    def sent_prob(self, sent):
-        """Probability of a sentence. Warning: subject to underflow problems.
-
-        sent -- the sentence as a list of tokens.
-        """
-        return 0.0
-
-    def sent_log_prob(self, sent):
-        """Log-probability of a sentence.
-
-        sent -- the sentence as a list of tokens.
-        """
-        return -math.inf
+    # def sent_prob(self, sent):
+    #     """Probability of a sentence. Warning: subject to underflow problems.
+    #
+    #     sent -- the sentence as a list of tokens.
+    #     """
+    #     return 0.0
+    #
+    # def sent_log_prob(self, sent):
+    #     """Log-probability of a sentence.
+    #
+    #     sent -- the sentence as a list of tokens.
+    #     """
+    #     return -math.inf
 
     def log_prob(self, sents):
         result = 0.0
@@ -81,10 +81,9 @@ class NGram(LanguageModel):
         tokens = prev_tokens + (token,)
 
         if tokens in self._count:
-            prob = float(self._count[tokens]) / self._count[prev_tokens]
+            return float(self._count[tokens]) / self._count[prev_tokens]
         else:
-            prob = 0.0
-        return prob
+            return 0.0
 
     def sent_prob(self, sent):
         """Probability of a sentence. Warning: subject to underflow problems.
@@ -110,7 +109,7 @@ class NGram(LanguageModel):
         """
         n = self._n
         logsentprob = 0.0
-        prev_token = ['<s>'] * (n - 1)
+        prev_token = ('<s>',) * (n - 1)
         sent = sent + ['</s>']
         for token in sent:
             prob_token = self.cond_prob(token, prev_token)
@@ -132,7 +131,12 @@ class AddOneNGram(NGram):
 
         # compute vocabulary
         self._voc = voc = set()
-        # WORK HERE!!
+
+        for sent in sents:
+            # add start and end markers
+            sent = sent + ['</s>']
+            for word in sent:
+                voc.add(word)
 
         self._V = len(voc)  # vocabulary size
 
@@ -140,6 +144,29 @@ class AddOneNGram(NGram):
         """Size of the vocabulary.
         """
         return self._V
+
+    def cond_prob(self, token, prev_tokens=None):
+        """Conditional probability of a token.
+
+        token -- the token.
+        prev_tokens -- the previous n-1 tokens (optional only if n = 1)
+
+        """
+        n = self._n
+        prev_token = ('<s>',) * (n - 1)
+        tokens = prev_tokens + (token,)
+
+        if tokens in self._count:
+            prob = float(self._count.get(tokens,0) + 1) / self._count.get(prev_tokens,) + self._V
+        else:
+            prob = 0.0
+        return prob
+
+        #
+        #
+        # tokens = prev_tokens + (token,)
+        # prob = float(self._count.get(tokens, 0) + 1) / float(self._count.get(prev_tokens, 0) + self._V)
+        # return prob
 
 
 class InterpolatedNGram(NGram):
