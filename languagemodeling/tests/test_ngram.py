@@ -13,8 +13,13 @@ class TestNGram(TestCase):
             'la gata come salmón .'.split(),
         ]
 
+    def logprob(self):
+        ngram = NGram(2,self.sents)
+
+
     def test_count_1gram(self):
         ngram = NGram(1, self.sents)
+        print(ngram.log_prob())
 
         counts = {
             (): 12,
@@ -141,3 +146,4 @@ class TestNGram(TestCase):
         }
         for sent, prob in sents.items():
             self.assertAlmostEqual(ngram.sent_log_prob(sent.split()), prob, msg=sent)
+

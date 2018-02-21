@@ -39,7 +39,7 @@ if __name__ == '__main__':
     opts = docopt(__doc__)
 
     # load the data
-    sents = gutenberg.sents(['chesterton-brown.txt', 'chesterton-ball.txt'])
+    sents = gutenberg.sents(['austen-emma.txt', 'austen-sense.txt'])
     train,test = train_test_split(sents,test_size=0.1, random_state=1)
 
     # text_file = open('chestertontest.txt',"w")

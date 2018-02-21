@@ -16,13 +16,13 @@ from languagemodeling.ngram_generator import NGramGenerator
 
 
 if __name__ == '__main__':
-    opts = docopt(__doc__)
-
-    # load the model
-    filename = opts['-i']
-    f = open(filename, 'rb')
-    model = pickle.load(f)
-    f.close()
+    # opts = docopt(__doc__)
+    #
+    # # load the model
+    # filename = opts['-i']
+    # f = open(filename, 'rb')
+    # model = pickle.load(f)
+    # f.close()
 
     # build generator
     generator = NGramGenerator(model)

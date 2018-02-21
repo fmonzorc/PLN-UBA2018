@@ -4,19 +4,20 @@ import math
 
 
 class LanguageModel(object):
-    # def sent_prob(self, sent):
-    #     """Probability of a sentence. Warning: subject to underflow problems.
-    #
-    #     sent -- the sentence as a list of tokens.
-    #     """
-    #     return 0.0
-    #
-    # def sent_log_prob(self, sent):
-    #     """Log-probability of a sentence.
-    #
-    #     sent -- the sentence as a list of tokens.
-    #     """
-    #     return -math.inf
+
+    def sent_prob(self, sent):
+        """Probability of a sentence. Warning: subject to underflow problems.
+
+        sent -- the sentence as a list of tokens.
+        """
+        return 0.0
+
+    def sent_log_prob(self, sent):
+        """Log-probability of a sentence.
+
+        sent -- the sentence as a list of tokens.
+        """
+        return -math.inf
 
     def log_prob(self, sents):
         result = 0.0
@@ -108,16 +109,17 @@ class NGram(LanguageModel):
         sent -- the sentence as a list of tokens.
         """
         n = self._n
-        logsentprob = 0.0
+        prob = 0.0
         prev_token = ('<s>',) * (n - 1)
         sent = sent + ['</s>']
         for token in sent:
             prob_token = self.cond_prob(token, prev_token)
             if prob_token == 0.0:
-                return -math.inf
-            logsentprob += math.log(prob_token, 2)
+                return 0.0
+            prob += math.log(prob_token, 2)
             prev_token = (prev_token + (token, ))[1:]
-        return logsentprob
+        return prob
+
 
 
 class AddOneNGram(NGram):
@@ -157,16 +159,10 @@ class AddOneNGram(NGram):
         tokens = prev_tokens + (token,)
 
         if tokens in self._count:
-            prob = float(self._count.get(tokens,0) + 1) / self._count.get(prev_tokens,) + self._V
+            prob = float(self._count.get(tokens,0) + 1) / float(self._count.get(prev_tokens,) + self._V )# TODO : corregir aca, esta formula esta mal da prob > 1
         else:
             prob = 0.0
         return prob
-
-        #
-        #
-        # tokens = prev_tokens + (token,)
-        # prob = float(self._count.get(tokens, 0) + 1) / float(self._count.get(prev_tokens, 0) + self._V)
-        # return prob
 
 
 class InterpolatedNGram(NGram):
